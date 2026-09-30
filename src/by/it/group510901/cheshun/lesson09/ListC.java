@@ -133,9 +133,7 @@ public class ListC<E> implements List<E> {
         size = 0;
     }
 
-    /**
-     * Возвращает индекс первого вхождения объекта или -1
-     */
+
     @Override
     public int indexOf(Object o) {
         for (int i = 0; i < size; i++) {
@@ -172,9 +170,7 @@ public class ListC<E> implements List<E> {
         return -1;
     }
 
-    /**
-     * Проверяет, содержит ли список все элементы коллекции
-     */
+
     @Override
     public boolean containsAll(Collection<?> c) {
         for (Object e : c) {
@@ -223,9 +219,7 @@ public class ListC<E> implements List<E> {
         return true;
     }
 
-    /**
-     * Удаляет из списка все элементы, содержащиеся в коллекции
-     */
+
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean modified = false;
@@ -239,9 +233,7 @@ public class ListC<E> implements List<E> {
         return modified;
     }
 
-    /**
-     * Удаляет все элементы, НЕ содержащиеся в коллекции
-     */
+
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean modified = false;
