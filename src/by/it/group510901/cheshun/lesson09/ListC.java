@@ -7,13 +7,13 @@ import java.util.ListIterator;
 
 public class ListC<E> implements List<E> {
 
-    //Создайте аналог списка БЕЗ использования других классов СТАНДАРТНОЙ БИБЛИОТЕКИ
 
-    // Внутренний массив для хранения элементов
+
+
     private Object[] elements;
-    // Текущее количество элементов в списке
+
     private int size;
-    // Начальная ёмкость по умолчанию
+
     private static final int DEFAULT_CAPACITY = 10;
 
     // Конструктор по умолчанию
@@ -37,9 +37,7 @@ public class ListC<E> implements List<E> {
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Возвращает строковое представление списка в формате [elem1, elem2, ...]
-     */
+
     @Override
     public String toString() {
         if (size == 0) {
@@ -57,9 +55,7 @@ public class ListC<E> implements List<E> {
         return sb.toString();
     }
 
-    /**
-     * Добавляет элемент в конец списка
-     */
+
     @Override
     public boolean add(E e) {
         ensureCapacity(size + 1);
@@ -67,9 +63,7 @@ public class ListC<E> implements List<E> {
         return true;
     }
 
-    /**
-     * Удаляет элемент по индексу и возвращает его
-     */
+
     @Override
     public E remove(int index) {
         checkIndex(index);
@@ -84,17 +78,13 @@ public class ListC<E> implements List<E> {
         return oldValue;
     }
 
-    /**
-     * Возвращает количество элементов в списке
-     */
+
     @Override
     public int size() {
         return size;
     }
 
-    /**
-     * Вставляет элемент по указанному индексу
-     */
+
     @Override
     public void add(int index, E element) {
         checkIndexForAdd(index);
@@ -118,9 +108,7 @@ public class ListC<E> implements List<E> {
         return false;
     }
 
-    /**
-     * Заменяет элемент по индексу, возвращает старый элемент
-     */
+
     @Override
     public E set(int index, E element) {
         checkIndex(index);
@@ -130,17 +118,13 @@ public class ListC<E> implements List<E> {
         return oldValue;
     }
 
-    /**
-     * Проверяет, пуст ли список
-     */
+
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
-    /**
-     * Очищает список
-     */
+
     @Override
     public void clear() {
         for (int i = 0; i < size; i++) {
@@ -162,9 +146,7 @@ public class ListC<E> implements List<E> {
         return -1;
     }
 
-    /**
-     * Возвращает элемент по индексу
-     */
+
     @Override
     public E get(int index) {
         checkIndex(index);
@@ -173,17 +155,13 @@ public class ListC<E> implements List<E> {
         return value;
     }
 
-    /**
-     * Проверяет наличие объекта в списке
-     */
+
     @Override
     public boolean contains(Object o) {
         return indexOf(o) >= 0;
     }
 
-    /**
-     * Возвращает индекс последнего вхождения объекта или -1
-     */
+
     @Override
     public int lastIndexOf(Object o) {
         for (int i = size - 1; i >= 0; i--) {
