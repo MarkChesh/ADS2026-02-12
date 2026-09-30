@@ -1,6 +1,5 @@
 package by.it.group510901.cheshun.lesson10;
 
-
 import java.util.*;
 
 public class MyPriorityQueue<E> implements Queue<E> {
@@ -8,7 +7,7 @@ public class MyPriorityQueue<E> implements Queue<E> {
     private static final int DEFAULT_CAPACITY = 11;
     private E[] heap;
     private int size;
-    private Comparator<? super E> comparator;
+    private final Comparator<? super E> comparator;
 
     @SuppressWarnings("unchecked")
     public MyPriorityQueue() {
@@ -24,65 +23,60 @@ public class MyPriorityQueue<E> implements Queue<E> {
         this.comparator = comparator;
     }
 
-    @SuppressWarnings("unchecked")
-    public MyPriorityQueue(Collection<? extends E> c) {
-        this.heap = (E[]) new Object[Math.max(DEFAULT_CAPACITY, c.size())];
-        this.size = 0;
-        this.comparator = null;
-        for (E e : c) {
-            add(e);
-        }
-    }
-
     // ============== Вспомогательные методы ==============
 
     @SuppressWarnings("unchecked")
     private int compare(E a, E b) {
-        if (comparator != null) {
-            return comparator.compare(a, b);
-        }
+        if (comparator != null) return comparator.compare(a, b);
         return ((Comparable<? super E>) a).compareTo(b);
     }
 
     @SuppressWarnings("unchecked")
     private void ensureCapacity(int minCapacity) {
         if (minCapacity > heap.length) {
-            int newCapacity = heap.length + (heap.length >> 1) + 1;
-            if (newCapacity < minCapacity) newCapacity = minCapacity;
-            E[] newHeap = (E[]) new Object[newCapacity];
+            int newCap = heap.length + (heap.length >> 1) + 1;
+            if (newCap < minCapacity) newCap = minCapacity;
+            if (newCap > Integer.MAX_VALUE - 8) newCap = Integer.MAX_VALUE - 8;
+            E[] newHeap = (E[]) new Object[newCap];
             System.arraycopy(heap, 0, newHeap, 0, size);
             heap = newHeap;
         }
     }
 
-    private void siftUp(int index) {
-        while (index > 0) {
-            int parent = (index - 1) >>> 1;
-            if (compare(heap[index], heap[parent]) >= 0) break;
-            swap(index, parent);
-            index = parent;
+    // "siftUp" из JDK — без обменов
+    private void siftUp(int k, E x) {
+        while (k > 0) {
+            int parent = (k - 1) >>> 1;
+            E e = heap[parent];
+            if (compare(x, e) >= 0) break;
+            heap[k] = e;
+            k = parent;
         }
+        heap[k] = x;
     }
 
-    private void siftDown(int index) {
+    // "siftDown" из JDK — без обменов
+    private void siftDown(int k, E x) {
         int half = size >>> 1;
-        while (index < half) {
-            int left = (index << 1) + 1;
-            int right = left + 1;
-            int smallest = left;
-            if (right < size && compare(heap[right], heap[left]) < 0) {
-                smallest = right;
+        while (k < half) {
+            int child = (k << 1) + 1;
+            E c = heap[child];
+            int right = child + 1;
+            if (right < size && compare(c, heap[right]) > 0) {
+                c = heap[child = right];
             }
-            if (compare(heap[index], heap[smallest]) <= 0) break;
-            swap(index, smallest);
-            index = smallest;
+            if (compare(x, c) <= 0) break;
+            heap[k] = c;
+            k = child;
         }
+        heap[k] = x;
     }
 
-    private void swap(int i, int j) {
-        E tmp = heap[i];
-        heap[i] = heap[j];
-        heap[j] = tmp;
+    // как в JDK: восстанавливаем кучу снизу вверх
+    private void heapify() {
+        for (int i = (size >>> 1) - 1; i >= 0; i--) {
+            siftDown(i, heap[i]);
+        }
     }
 
     // ============== Обязательные методы ==============
@@ -95,8 +89,7 @@ public class MyPriorityQueue<E> implements Queue<E> {
             sb.append(heap[i]);
             if (i < size - 1) sb.append(", ");
         }
-        sb.append("]");
-        return sb.toString();
+        return sb.append("]").toString();
     }
 
     @Override
@@ -104,32 +97,33 @@ public class MyPriorityQueue<E> implements Queue<E> {
         return size;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void clear() {
-        for (int i = 0; i < size; i++) {
-            heap[i] = null;
-        }
+        for (int i = 0; i < size; i++) heap[i] = null;
         size = 0;
     }
 
     @Override
-    public boolean add(E element) {
-        if (element == null) throw new NullPointerException();
+    public boolean add(E e) {
+        if (e == null) throw new NullPointerException();
         ensureCapacity(size + 1);
-        heap[size] = element;
-        siftUp(size);
-        size++;
+        int i = size;
+        size = i + 1;
+        if (i == 0) {
+            heap[0] = e;
+        } else {
+            siftUp(i, e);
+        }
         return true;
     }
 
     @Override
     public E remove() {
-        if (size == 0) throw new NoSuchElementException();
-        return poll();
+        E x = poll();
+        if (x == null) throw new NoSuchElementException();
+        return x;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o) {
         if (o == null) return false;
@@ -140,18 +134,18 @@ public class MyPriorityQueue<E> implements Queue<E> {
     }
 
     @Override
-    public boolean offer(E element) {
-        return add(element);
+    public boolean offer(E e) {
+        return add(e);
     }
 
     @Override
     public E poll() {
         if (size == 0) return null;
+        int s = --size;
         E result = heap[0];
-        size--;
-        heap[0] = heap[size];
-        heap[size] = null;
-        if (size > 0) siftDown(0);
+        E x = heap[s];
+        heap[s] = null;
+        if (s != 0) siftDown(0, x);
         return result;
     }
 
@@ -162,14 +156,17 @@ public class MyPriorityQueue<E> implements Queue<E> {
 
     @Override
     public E element() {
-        if (size == 0) throw new NoSuchElementException();
-        return heap[0];
+        E x = peek();
+        if (x == null) throw new NoSuchElementException();
+        return x;
     }
 
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
+
+    // ============== Коллекционные методы ==============
 
     @Override
     public boolean containsAll(Collection<?> c) {
@@ -189,49 +186,47 @@ public class MyPriorityQueue<E> implements Queue<E> {
         return modified;
     }
 
+    // Точная копия алгоритма java.util.PriorityQueue.removeAll
     @Override
     public boolean removeAll(Collection<?> c) {
         if (c == null) throw new NullPointerException();
-        boolean modified = false;
-        // Собираем элементы, которые нужно оставить
-        for (int i = size - 1; i >= 0; i--) {
-            if (c.contains(heap[i])) {
-                removeAt(i);
-                modified = true;
-            }
+        if (c == this) return false;
+        int i, n = size;
+        for (i = 0; i < n; i++) {
+            if (c.contains(heap[i])) break;
         }
-        return modified;
+        if (i == n) return false;
+        for (int j = i + 1; j < n; j++) {
+            E element = heap[j];
+            if (!c.contains(element)) heap[i++] = element;
+        }
+        for (int k = i; k < n; k++) heap[k] = null;
+        size = i;
+        heapify();
+        return true;
     }
 
+    // Точная копия алгоритма java.util.PriorityQueue.retainAll
     @Override
     public boolean retainAll(Collection<?> c) {
         if (c == null) throw new NullPointerException();
-        boolean modified = false;
-        for (int i = size - 1; i >= 0; i--) {
-            if (!c.contains(heap[i])) {
-                removeAt(i);
-                modified = true;
-            }
+        if (c == this) return false;
+        int i, n = size;
+        for (i = 0; i < n; i++) {
+            if (!c.contains(heap[i])) break;
         }
-        return modified;
+        if (i == n) return false;
+        for (int j = i + 1; j < n; j++) {
+            E element = heap[j];
+            if (c.contains(element)) heap[i++] = element;
+        }
+        for (int k = i; k < n; k++) heap[k] = null;
+        size = i;
+        heapify();
+        return true;
     }
 
-    private E removeAt(int index) {
-        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
-        E removed = heap[index];
-        size--;
-        if (index == size) {
-            heap[size] = null;
-        } else {
-            heap[index] = heap[size];
-            heap[size] = null;
-            siftDown(index);
-            siftUp(index);
-        }
-        return removed;
-    }
-
-    // ============== Остальные методы Queue/Collection ==============
+    // ============== Остальное (для компиляции Queue/Collection) ==============
 
     @Override
     public Object[] toArray() {
@@ -254,14 +249,34 @@ public class MyPriorityQueue<E> implements Queue<E> {
 
     @Override
     public boolean remove(Object o) {
-        if (o == null) return false;
+        int i = indexOf(o);
+        if (i == -1) return false;
+        removeAt(i);
+        return true;
+    }
+
+    private int indexOf(Object o) {
+        if (o == null) return -1;
         for (int i = 0; i < size; i++) {
-            if (o.equals(heap[i])) {
-                removeAt(i);
-                return true;
+            if (o.equals(heap[i])) return i;
+        }
+        return -1;
+    }
+
+    private E removeAt(int i) {
+        int s = --size;
+        if (s == i) {
+            heap[i] = null;
+        } else {
+            E moved = heap[s];
+            heap[s] = null;
+            heap[i] = moved;
+            siftDown(i, moved);
+            if (heap[i] == moved) {
+                siftUp(i, moved);
             }
         }
-        return false;
+        return null;
     }
 
     @Override
