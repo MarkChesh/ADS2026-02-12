@@ -34,14 +34,14 @@ public class MyLinkedHashSet<E> implements Set<E> {
         table = new Node[capacity];
     }
 
-    // Вычисление индекса бакета по хеш-коду
+
     private int indexFor(Object obj, int length) {
         if (obj == null) return 0;
         int hash = obj.hashCode();
         return (hash & 0x7FFFFFFF) % length;
     }
 
-    // Поиск узла в бакете по элементу
+
     private Node<E> findInBucket(int index, Object obj) {
         Node<E> current = table[index];
         while (current != null) {
@@ -53,13 +53,13 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return null;
     }
 
-    // Добавление узла в бакет (в начало списка коллизий)
+
     private void addToBucket(int index, Node<E> node) {
         node.next = table[index];
         table[index] = node;
     }
 
-    // Удаление узла из бакета
+
     private void removeFromBucket(int index, Node<E> node) {
         if (table[index] == node) {
             table[index] = node.next;

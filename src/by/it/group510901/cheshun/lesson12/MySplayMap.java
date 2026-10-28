@@ -22,7 +22,7 @@ public class MySplayMap implements NavigableMap<Integer, String> {
     private Node root;
     private int size;
 
-    // ---------- splay ----------
+
     private void splay(Node x) {
         while (x != null && x.parent != null) {
             Node p = x.parent, g = p.parent;

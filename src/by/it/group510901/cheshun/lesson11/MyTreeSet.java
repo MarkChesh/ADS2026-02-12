@@ -27,7 +27,7 @@ public class MyTreeSet<E> implements Set<E> {
         return ((Comparable<? super E>) a).compareTo(b);
     }
 
-    // Бинарный поиск: возвращает индекс найденного элемента или -(точка вставки)-1
+
     @SuppressWarnings("unchecked")
     private int binarySearch(Object o) {
         int low = 0, high = size - 1;
