@@ -14,7 +14,7 @@ public class GraphA {
         Set<String> vertices = new HashSet<>();
         List<String[]> edges = new ArrayList<>();
 
-        // Парсим строку
+
         String[] parts = input.split(",");
         for (String part : parts) {
             part = part.trim();

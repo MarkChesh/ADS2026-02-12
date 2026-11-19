@@ -51,7 +51,7 @@ public class GraphC {
             }
         }
 
-        // Сортировка компонент: исток -> сток (топологический порядок)
+
         List<List<Character>> sortedComponents = new ArrayList<>();
         Set<Character> used = new HashSet<>();
 
@@ -59,7 +59,7 @@ public class GraphC {
             for (List<Character> comp : components) {
                 if (used.contains(comp.get(0))) continue;
 
-                // Проверяем, что нет входящих ребер из неиспользованных компонент
+                
                 boolean isSource = true;
                 for (Character v : comp) {
                     for (Character from : reverseGraph.get(v)) {
